@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Video Page</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(to bottom, #050217, #001b6a, #0575e6, #1597bb, #1597bb, #06e5af);
+        }
+
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px 0px;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 999;
+        }
+
+        .navbar-brand,
+        .navbar-links {
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar-brand img {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+        }
+
+        .navbar-links a {
+            color: #fff;
+            text-decoration: none;
+            margin: 0 10px;
+            transition: color 0.3s;
+        }
+
+        .navbar-links a:hover {
+            color: #88DDCA;
+        }
+
+        iframe {
+            width: 75vw;
+            height: 75vh;
+            position: relative;
+            z-index: 1;
+        }
+
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="navbar">
+        <div class="navbar-brand">
+            <img src="https://play-lh.googleusercontent.com/bxE-d8VkHvRiQq1Py1_als6SYmf9ByA_Qq9Qa0d3xER5fMDpqtJYr_4hC4X-3d9NPiI=w240-h480-rw" alt="Logo">
+            <h1 style="color: #fff;">Digital Audiometer</h1>
+        </div>
+        <div class="navbar-links">
+            <a href="index.html">HOME</a>
+            <a href="aboutus.html">ABOUT</a>
+            <a href="yt.html">VIDEO</a>
+            <a href="team1.html">TEAM</a>
+        </div>
+    </div>
+    <iframe width="75%" height="75%" src="https://www.youtube.com/embed/mBcj-SRNoBE?feature=shared" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    <canvas id="starCanvas"></canvas>
+    <canvas id="waveformCanvas"></canvas>
+    <script>
+        document.addEventListener("mousemove", parallax);
+        const elem = document.querySelector(".gradient-background");
+        function parallax(e) {
+            let _w = window.innerWidth / 2;
+            let _h = window.innerHeight / 2;
+            let _mouseX = e.clientX;
+            let _mouseY = e.clientY;
+            let _depth1 = `${50 - (_mouseX - _w) * 0.01}% ${50 - (_mouseY - _h) * 0.01}%`;
+            let x = `${_depth1}`;
+            elem.style.backgroundPosition = x;
+        }
+
+        const starCanvas = document.getElementById('starCanvas');
+        const starCtx = starCanvas.getContext('2d');
+        starCanvas.width = window.innerWidth;
+        starCanvas.height = window.innerHeight;
+
+        const numStars = 300;
+        const stars = [];
+        for (let i = 0; i < numStars; i++) {
+            const x = Math.random() * starCanvas.width;
+            const y = Math.random() * starCanvas.height;
+            const radius = Math.random() * 2;
+            stars.push({ x: x, y: y, radius: radius, speed: Math.random() * 0.5 + 0.2 });
+        }
+
+        function drawStars() {
+            starCtx.clearRect(0, 0, starCanvas.width, starCanvas.height);
+            starCtx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+            for (let i = 0; i < numStars; i++) {
+                const star = stars[i];
+                starCtx.beginPath();
+                starCtx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+                starCtx.fill();
+                star.x -= star.speed;
+                if (star.x < 0) {
+                    stars[i] = {
+                        x: starCanvas.width,
+                        y: Math.random() * starCanvas.height,
+                        radius: star.radius,
+                        speed: Math.random() * 0.5 + 0.2
+                    };
+                }
+            }
+        }
+
+        function updateCanvasSize() {
+            starCanvas.width = window.innerWidth;
+            starCanvas.height = window.innerHeight;
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            drawStars();
+        }
+
+        animate();
+        window.addEventListener('resize', updateCanvasSize);
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const container = document.querySelector('body');
+            const canvas = document.getElementById('waveformCanvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+
+            const wave = {
+                y: canvas.height / 2,
+                length: 0.01,
+                amplitude: 100,
+                frequency: 0.01,
+                speed: 0.1,
+                position: 0
+            };
+
+            function animate() {
+                requestAnimationFrame(animate);
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.beginPath();
+                for (let i = 0; i < canvas.width; i++) {
+                    ctx.lineTo(i, wave.y + Math.sin(i * wave.length + wave.position) * wave.amplitude * Math.sin(wave.position));
+                }
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                wave.position += wave.speed;
+            }
+
+            animate();
+
+            function onResize() {
+                canvas.width = container.clientWidth;
+                canvas.height = container.clientHeight;
+                wave.y = canvas.height / 2;
+            }
+
+            window.addEventListener('resize', onResize);
+        });
+    </script>
+</body>
+
+</html>
