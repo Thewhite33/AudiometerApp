@@ -1,37 +1,247 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdn.tailwindcss.com"></script>
     <title>Digital Audiometer</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            overflow: hidden;
+            color: #fff;
+        }
+
+        .gradient-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: #98DDCA; /* fallback for old browsers */
+            background: linear-gradient(to bottom, #98DDCA, #63AAB6, #3E7A9A, #214559, #12202F);
+            z-index: -1;
+        }
+
+        .navbar {
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(5px);
+            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.06);
+            position: sticky;
+            top: 0;
+            left: 0;
+            padding: 20px 80px;
+            z-index: 999;
+        }
+
+        .navbar a {
+            color: #fff;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .navbar a:hover {
+            color: #88DDCA;
+            text-decoration: underline;
+        }
+
+        .hero {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        .hero img {
+            width: 400px;
+            border-radius: 10px;
+            box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.5s;
+            
+        }
+
+        .hero img:hover {
+            transform: translate(-5px, -5px);
+        }
+
+        .start-button {
+            background: linear-gradient(to right, #b3f6c8, #66ff99);
+            padding: 14px 80px 14px 65px;
+            border-radius: 40px;
+            color: #12202F;
+            font-weight: 700;
+            font-size: 15px;
+            transition: all 0.3s ease-out;
+            text-decoration: none;
+            cursor: pointer;
+            display: inline-block;
+        }
+
+        .start-button:hover {
+            background: linear-gradient(to right, #8affb7, #3ae374);
+            color: #fff;
+            transform: translate(-2px, 2px);
+        }
+        
+    </style>
 </head>
+
 <body>
-    <div class="w-[100%] h-[100vh]">
-        <section class="flex items-center justify-between p-[20px_80px] bg-[#E3E6F3] shadow-[0px_5px_15px_rgba(0,0,0,0.06)] z-[999] sticky top-0 left-0">
-        <div class="flex items-center justify-between gap-1">
-        <a href="#"><img src="https://play-lh.googleusercontent.com/bxE-d8VkHvRiQq1Py1_als6SYmf9ByA_Qq9Qa0d3xER5fMDpqtJYr_4hC4X-3d9NPiI=w240-h480-rw" alt="" class="w-[45px] h-[45px]"></a>
-        <a href="home.html" class="p-[0_20px]"><a href="#" class="hover:text-[#088178] transition duration-[0.3s] ease hover:active:text-[#088178] hover:underline">Digital Audiometer</a>
-        
-        </div>
-        
+    <div class="gradient-background"></div>
+    <div class="w-full h-screen">
+        <section class="navbar flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <a href="nw.html">
+                    <img src="https://play-lh.googleusercontent.com/bxE-d8VkHvRiQq1Py1_als6SYmf9ByA_Qq9Qa0d3xER5fMDpqtJYr_4hC4X-3d9NPiI=w240-h480-rw" alt="" class="w-10 h-10 rounded-full">
+                </a>
+                <a href="#" class="text-4xl font-bold">Digital Audiometer</a>
+            </div>
 
-        <div>
-            <ul class="flex items-center justify-center text-[16px] font-[600] text-[#1a1a1a]">
-                <li class="p-[0_20px]"><a href="#" class="hover:text-[#088178] transition duration-[0.3s] ease hover:active:text-[#088178] hover:underline">Technology Used</a></li>
-                <li class="p-[0_20px]"><a href="#" class="hover:text-[#088178] transition duration-[0.3s] ease hover:underline">Team</a></li>
-            </ul>
-        </div>
-    </section>
+            <div>
+                <ul class="flex items-center justify-center space-x-8 text-lg font-semibold">
+                    <li><a href="index.html">HOME</a></li>
+                    <li><a href="aboutus.html">ABOUT</a></li>
+                    
+                    <li><a href="yt.html">VIDEO</a></li>
+                    <li><a href="team1.html">TEAM</a></li>
+                </ul>
+            </div>
+        </section>
 
-    <div class="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]">
-        <img src="hp.png" alt="">
-        <button class="absolute top-[105%] left-[50%] translate-x-[-50%] translate-y-[-50%] bg-green-500 p-[14px_80px_14px_65px] rounded-[40px] text-white hover:bg-slate-300 hover:text-black font-[700] text-[15px] ease-out duration-[0.3s]">
-            <a href="test.html" class="text-center">Start Test</a>
-        </button>
+        <div class="hero">
+            <img src="hp.png" alt="Digital Audiometer Image" class="rounded-lg">
+            <h2 class="text-3xl font-bold mt-8">Welcome</h2>
+            <p class="text-xl mt-4">To start the test Click Button below</p>
+            <button class="start-button mt-8">
+                <a href="test.html">Start Test</a>
+            </button>
+            <!-- <a href="index.html" class="start-button mt-8">
+                <button>Start Test</button>
+            </a> -->
+            
+        </div>
+        <!-- <div class="about-us-section" style="background: linear-gradient(to bottom, #ffffff, #f8f8f8); padding: 50px 0;">
+            <h2 class="text-3xl text-center font-bold mb-4">About Us</h2>
+            <p class="text-center text-lg mx-10">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque euismod metus vitae lorem tristique, ut scelerisque purus feugiat. Integer vestibulum, massa et rutrum accumsan, nisl metus suscipit risus, et volutpat sapien libero non turpis.</p>
+        </div>
+    
+        <div class="youtube-section" style="padding: 50px 0; display: flex; justify-content: center;">
+            <iframe width="60%" height="400" src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+    
+        <footer class="footer-section" style="background: rgba(0, 0, 0, 0.8); color: #fff; padding: 50px 0;">
+            <h2 class="text-3xl text-center font-bold mb-4">Our Team</h2>
+            <p class="text-center text-lg mx-10">Meet our dedicated team of professionals who are passionate about bringing innovative solutions to the world.</p>
+        </footer> -->
+    
+        
+    </div>
+    
+
+    <canvas id="starCanvas" style="position: fixed; top: 0; left: 0; pointer-events: none;"></canvas>
+    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; pointer-events: none;">
+        <canvas id="waveformCanvas" style="position: absolute; top: 0; left: 0; z-index: -1; pointer-events: none;"></canvas>
     </div>
 
-    </div>
+    <script>
+        document.addEventListener("mousemove", parallax);
+        const elem = document.querySelector(".gradient-background");
+        function parallax(e) {
+            let _w = window.innerWidth/2;
+            let _h = window.innerHeight/2;
+            let _mouseX = e.clientX;
+            let _mouseY = e.clientY;
+            let _depth1 = `${50 - (_mouseX - _w) * 0.01}% ${50 - (_mouseY - _h) * 0.01}%`;
+            let x = `${_depth1}`;
+            elem.style.backgroundPosition = x;
+        }
 
+        // Creating stars
+        const canvas = document.getElementById('starCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const numStars = 300;
+        const stars = [];
+        for (let i = 0; i < numStars; i++) {
+            const x = Math.random() * canvas.width;
+            const y = Math.random() * canvas.height;
+            const radius = Math.random() * 2;
+            stars.push({x: x, y: y, radius: radius, speed: Math.random() * 0.5 + 0.2});
+        }
+
+        function drawStars() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+            for (let i = 0; i < numStars; i++) {
+                const star = stars[i];
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+                ctx.fill();
+                star.x -= star.speed;
+                if (star.x < 0) {
+                    stars[i] = {x: canvas.width, y: Math.random() * canvas.height, radius: star.radius, speed: Math.random() * 0.5 + 0.2};
+                }
+            }
+        }
+
+        function updateCanvasSize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            drawStars();
+        }
+
+        animate();
+        window.addEventListener('resize', updateCanvasSize);
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const container = document.querySelector('body');
+            const canvas = document.getElementById('waveformCanvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+
+            const wave = {
+                y: canvas.height / 2,
+                length: 0.01,
+                amplitude: 100,
+                frequency: 0.01,
+                speed: 0.1,
+                position: 0
+            };
+
+            function animate() {
+                requestAnimationFrame(animate);
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.beginPath();
+                for (let i = 0; i < canvas.width; i++) {
+                    ctx.lineTo(i, wave.y + Math.sin(i * wave.length + wave.position) * wave.amplitude * Math.sin(wave.position));
+                }
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                wave.position += wave.speed;
+            }
+
+            animate();
+
+            function onResize() {
+                canvas.width = container.clientWidth;
+                canvas.height = container.clientHeight;
+                wave.y = canvas.height / 2;
+            }
+
+            window.addEventListener('resize', onResize);
+        });
+    </script>
 </body>
+
 </html>
