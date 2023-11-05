@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hearing Test</title>
+    <link rel="stylesheet" href="StylinNW01.css">
+</head>
+<body>
+    <header>
+        <h1>Hearing Test</h1>
+    </header>
+    <main>
+        <p>Listen to the sounds and click the "Yes" or "No" button to indicate whether you heard the sound.</p>
+        <audio id="audioElement" controls style="display: none;">
+            <source src="audio1.mp3" type="audio/mpeg">
+            <source src="audio2.mp3" type="audio/mpeg">
+            <source src="audio3.mp3" type="audio/mpeg">
+            <source src="audio4.mp3" type="audio/mpeg">
+            <source src="audio5.mp3" type="audio/mpeg">
+        </audio>
+        <button id="startButton" class="start-button">Start Test</button>
+        <button id="yesButton" class="response-button" style="display: none;">Yes</button>
+        <button id="noButton" class="response-button" style="display: none;">No</button>
+        <button id="noButton" class="finishButton" style="display: none;">Finish</button>
+        <a href="index.html" class="back-button">Back to Home</a>
+        <p id="score" style="display: none;">Score: 0</p>
+    </main>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const audioElement = document.getElementById("audioElement");
+            const startButton = document.getElementById("startButton");
+            const yesButton = document.getElementById("yesButton");
+            const noButton = document.getElementById("noButton");
+            const scoreElement = document.getElementById("score");
+    
+            let currentSoundIndex = 0;
+            let score = 0;
+            let userData = []; // Array to store user responses
+    
+            // Array of sound file names
+            const soundFiles = ["audio1.mp3", "audio2.mp3", "audio3.mp3", "audio4.mp3", "audio5.mp3", "audio6.mp3"];
+    
+            // Function to play the next sound
+            function playNextSound() {
+                if (currentSoundIndex < soundFiles.length) {
+                    audioElement.src = soundFiles[currentSoundIndex];
+                    audioElement.play();
+                    currentSoundIndex++;
+                } else {
+                    // All sounds have been played, test is complete
+                    yesButton.style.display = "none";
+                    noButton.style.display = "none";
+                    scoreElement.style.display = "block";
+                    scoreElement.textContent = "Score: " + score;
+    
+                    // Store user responses in local storage
+                    localStorage.setItem("userData", JSON.stringify(userData));
+                }
+            }
+    
+            // Event listener for the "Yes" button
+            yesButton.addEventListener("click", () => {
+                score += 1;
+                userData.push("Yes"); // Record the user's response
+                playNextSound();
+            });
+    
+            // Event listener for the "No" button
+            noButton.addEventListener("click", () => {
+                userData.push("No"); // Record the user's response
+                playNextSound();
+            });
+    
+            // Event listener for audio playback ended
+            audioElement.addEventListener("ended", () => {
+                yesButton.style.display = "block";
+                noButton.style.display = "block";
+            });
+    
+            // Event listener for start button
+            startButton.addEventListener("click", () => {
+                startButton.style.display = "none";
+                yesButton.style.display = "block";
+                noButton.style.display = "block";
+                playNextSound();
+            });
+    
+            // Event listener for page load (to check for previously recorded data)
+            window.addEventListener("load", () => {
+                const storedData = localStorage.getItem("userData");
+                if (storedData) {
+                    userData = JSON.parse(storedData);
+                    score = userData.filter((response) => response === "Yes").length;
+                    scoreElement.style.display = "block";
+                    scoreElement.textContent = "Score: " + score;
+                }
+            });
+        });
+    </script>
+    
+    
+    
+</body>
+</html>
+
