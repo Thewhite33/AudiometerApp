@@ -3,105 +3,323 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hearing Test</title>
-    <link rel="stylesheet" href="StylinNW01.css">
+    <title>Audiometry Test</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background: url('pexels-garrett-morrow-1649771.jpg') center/cover;
+        }
+
+        .test-container {
+            text-align: center;
+            background-color: rgb(255, 255, 255); /* Adding a semi-transparent white background */
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            max-width: 600px;
+            width: 100%;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            color: #4caf50;
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+
+        p {
+            color: #555;
+            font-size: 1.2em;
+            margin-bottom: 30px;
+        }
+
+        .button-container {
+            margin-top: 30px;
+            opacity: 0;
+            animation: fadeInUp 1s ease-in-out 0.5s forwards;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        button {
+            padding: 15px;
+            font-size: 1.2em;
+            margin: 10px;
+            background-color: #4caf50;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #result {
+            margin-top: 30px;
+            font-weight: bold;
+            color: #4caf50;
+            font-size: 1.5em;
+            opacity: 0;
+            animation: fadeInUp 1s ease-in-out 0.5s forwards;
+        }
+
+        #volumeSlider {
+            width: 50%;
+            margin-top: 20px;
+            opacity: 0;
+            animation: fadeInUp 1s ease-in-out 1s forwards;
+        }
+
+        canvas {
+            margin-top: 30px;
+            opacity: 0;
+            animation: fadeInUp 1s ease-in-out 1.5s forwards;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <header>
-        <h1>Hearing Test</h1>
-    </header>
-    <main>
-        <p>Listen to the sounds and click the "Yes" or "No" button to indicate whether you heard the sound.</p>
-        <audio id="audioElement" controls style="display: none;">
-            <source src="audio1.mp3" type="audio/mpeg">
-            <source src="audio2.mp3" type="audio/mpeg">
-            <source src="audio3.mp3" type="audio/mpeg">
-            <source src="audio4.mp3" type="audio/mpeg">
-            <source src="audio5.mp3" type="audio/mpeg">
+    <div class="test-container">
+        <h1>Audiometry Test</h1>
+        <p id="instruction">Click the button to play a random sound. Press the <b>YES</b> button only when you hear the sound <b>clearly</b>.</p>
+        <audio id="audio" controls style="display: none;">
+            Your browser does not support the audio element.
         </audio>
-        <button id="startButton" class="start-button">Start Test</button>
-        <button id="yesButton" class="response-button" style="display: none;">Yes</button>
-        <button id="noButton" class="response-button" style="display: none;">No</button>
-        <button id="noButton" class="finishButton" style="display: none;">Finish</button>
-        <a href="index.html" class="back-button">Back to Home</a>
-        <p id="score" style="display: none;">Score: 0</p>
-    </main>
+        <div class="button-container">
+            <button id="startButton" onclick="playRandomSound()">Start Test</button>
+            <button id="yesButton" style="display: none;" onclick="getUserResponse(true)">Yes</button>
+            <button id="noButton" style="display: none;" onclick="getUserResponse(false)">No</button>
+        </div>
+        <div id="result"></div>
+        <canvas id="responseChart" width="400" height="300"></canvas>
+    </div>
 
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const audioElement = document.getElementById("audioElement");
-            const startButton = document.getElementById("startButton");
-            const yesButton = document.getElementById("yesButton");
-            const noButton = document.getElementById("noButton");
-            const scoreElement = document.getElementById("score");
-    
-            let currentSoundIndex = 0;
-            let score = 0;
-            let userData = []; // Array to store user responses
-    
-            // Array of sound file names
-            const soundFiles = ["audio1.mp3", "audio2.mp3", "audio3.mp3", "audio4.mp3", "audio5.mp3", "audio6.mp3"];
-    
-            // Function to play the next sound
-            function playNextSound() {
-                if (currentSoundIndex < soundFiles.length) {
-                    audioElement.src = soundFiles[currentSoundIndex];
-                    audioElement.play();
-                    currentSoundIndex++;
-                } else {
-                    // All sounds have been played, test is complete
-                    yesButton.style.display = "none";
-                    noButton.style.display = "none";
-                    scoreElement.style.display = "block";
-                    scoreElement.textContent = "Score: " + score;
-    
-                    // Store user responses in local storage
-                    localStorage.setItem("userData", JSON.stringify(userData));
+        var audio = document.getElementById("audio");
+        var frequencies = [500, 1000, 2000, 4000, 8000];
+        var intensityLevels = [100, 75, 50, 25];
+        var userResponses = []; // Store user responses
+        var yesCount = 0;
+        var trialCount = 0;
+function playRandomSound() {
+    if (trialCount >= frequencies.length * intensityLevels.length) {
+        showResults();
+        return;
+    }
+
+    hideStartButton();
+    showAudioControls();
+    showInstruction();
+
+    var currentFrequencyIndex = Math.floor(trialCount / intensityLevels.length);
+    var currentIntensityIndex = trialCount % intensityLevels.length;
+
+    var expectedFrequency = frequencies[currentFrequencyIndex];
+    var intensity = intensityLevels[currentIntensityIndex];
+
+    playSound(expectedFrequency, intensity);
+    showResponseButtons();
+}
+
+function getUserResponse(response) {
+    hideResponseButtons();
+    if (response) {
+        yesCount++;
+
+        var currentFrequencyIndex = Math.floor((trialCount - 1) / intensityLevels.length);
+        var currentIntensityIndex = (trialCount - 1) % intensityLevels.length;
+
+        userResponses.push({ frequency: frequencies[currentFrequencyIndex], intensity: intensityLevels[currentIntensityIndex], response: response });
+
+        // Check if there are more frequencies to play
+        if (trialCount < frequencies.length * intensityLevels.length) {
+            trialCount++;
+            playRandomSound();
+        } else {
+            // Test completed, show results
+            showResults();
+        }
+    } else {
+        // If the user responds "No," play the same sound again
+        playSound(frequencies[Math.floor((trialCount - 1) / intensityLevels.length)], intensityLevels[(trialCount - 1) % intensityLevels.length]);
+    }
+}
+
+
+        function playSound(frequency, intensity) {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            oscillator.type = 'sine';
+            oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+
+            const gainNode = audioContext.createGain();
+            const volume = intensity / 100; // Linear scale for intensity
+            gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+            gainNode.gain.linearRampToValueAtTime(volume, audioContext.currentTime + 1); // 1 second duration
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            oscillator.start();
+
+            setTimeout(function() {
+                oscillator.stop();
+            }, 1000);
+        }
+
+        function showResponseButtons() {
+            document.getElementById("yesButton").style.display = "inline-block";
+            document.getElementById("noButton").style.display = "inline-block";
+        }
+
+        function hideResponseButtons() {
+            document.getElementById("yesButton").style.display = "none";
+            document.getElementById("noButton").style.display = "none";
+        }
+
+        function getUserResponse(response) {
+            hideResponseButtons();
+            if (response) {
+                yesCount++;
+            }
+            trialCount++;
+
+            var currentFrequencyIndex = Math.floor((trialCount - 1) / intensityLevels.length);
+            var currentIntensityIndex = (trialCount - 1) % intensityLevels.length;
+            userResponses.push({ frequency: frequencies[currentFrequencyIndex], intensity: intensityLevels[currentIntensityIndex], response: response });
+
+            playRandomSound();
+        }
+
+        function hideStartButton() {
+            document.getElementById("startButton").style.display = "none";
+        }
+
+        function showResults() {
+            hideAudioControls();
+            hideInstruction();
+            displayResultChart();
+        }
+
+        function showAudioControls() {
+            document.getElementById("audio").style.display = "inline-block";
+        }
+
+        function hideAudioControls() {
+            document.getElementById("audio").style.display = "none";
+        }
+
+        function showInstruction() {
+            document.getElementById("instruction").style.display = "block";
+        }
+
+        function hideInstruction() {
+            document.getElementById("instruction").style.display = "none";
+        }
+
+        function displayResultChart() {
+            var resultDiv = document.getElementById("result");
+
+            // Create a line chart
+            var ctx = document.getElementById("responseChart").getContext("2d");
+            var chartData = {
+                labels: frequencies.map(f => f + " Hz"),
+                datasets: [{
+                    label: '25% Intensity',
+                    data: getUserResponsesForIntensity(25),
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1,
+                    fill: false
+                }, {
+                    label: '50% Intensity',
+                    data: getUserResponsesForIntensity(50),
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1,
+                    fill: false
+                }, {
+                    label: '75% Intensity',
+                    data: getUserResponsesForIntensity(75),
+                    backgroundColor: 'rgba(255, 206, 86, 0.2)',
+                    borderColor: 'rgba(255, 206, 86, 1)',
+                    borderWidth: 1,
+                    fill: false
+                }, {
+                    label: '100% Intensity',
+                    data: getUserResponsesForIntensity(100),
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1,
+                    fill: false
+                }]
+            };
+
+            var chartOptions = {
+    scales: {
+        x: {
+            beginAtZero: true
+        },
+        y: {
+            beginAtZero: true,
+            max: 1,
+            ticks: {
+                callback: function(value) {
+                    return value * 100 + "%";
                 }
             }
-    
-            // Event listener for the "Yes" button
-            yesButton.addEventListener("click", () => {
-                score += 1;
-                userData.push("Yes"); // Record the user's response
-                playNextSound();
+        }
+    }
+};
+
+
+            var myChart = new Chart(ctx, {
+                type: 'line',
+                data: chartData,
+                options: chartOptions
             });
-    
-            // Event listener for the "No" button
-            noButton.addEventListener("click", () => {
-                userData.push("No"); // Record the user's response
-                playNextSound();
-            });
-    
-            // Event listener for audio playback ended
-            audioElement.addEventListener("ended", () => {
-                yesButton.style.display = "block";
-                noButton.style.display = "block";
-            });
-    
-            // Event listener for start button
-            startButton.addEventListener("click", () => {
-                startButton.style.display = "none";
-                yesButton.style.display = "block";
-                noButton.style.display = "block";
-                playNextSound();
-            });
-    
-            // Event listener for page load (to check for previously recorded data)
-            window.addEventListener("load", () => {
-                const storedData = localStorage.getItem("userData");
-                if (storedData) {
-                    userData = JSON.parse(storedData);
-                    score = userData.filter((response) => response === "Yes").length;
-                    scoreElement.style.display = "block";
-                    scoreElement.textContent = "Score: " + score;
-                }
-            });
+
+            resultDiv.innerHTML = "<p>Test completed. See the chart below for user responses.</p>";
+        }
+        function getUserResponsesForIntensity(intensity) {
+            return frequencies.map(f => getUserResponseForFrequencyAndIntensity(f, intensity));
+        }
+
+        function getUserResponseForFrequencyAndIntensity(frequency, intensity) {
+            var response = userResponses.find(r => r.frequency === frequency && r.intensity === intensity);
+            return response ? response.response : 0;
+        }
+
+        audio.addEventListener("ended", function() {
+            hideResponseButtons();
         });
     </script>
-    
-    
-    
 </body>
 </html>
-
